@@ -36,8 +36,12 @@
     <Reference Include="EntityFramework.SqlServer">
       <HintPath>..\packages\EntityFramework.6.1.2\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
+    <Reference Include="StackExchange.Redis">
+      <HintPath>..\packages\StackExchange.Redis.1.0.371\lib\net45\StackExchange.Redis.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -49,9 +53,16 @@
     <Compile Include="Data\Account.cs" />
     <Compile Include="Data\Context.cs" />
     <Compile Include="Data\Device.cs" />
+    <Compile Include="Helpers\PasswordHasher.cs" />
+    <Compile Include="Helpers\RedisConnection.cs" />
+    <Compile Include="Managers\AccountsMgr.cs" />
     <Compile Include="Migrations\201412292018182_Initial.cs" />
     <Compile Include="Migrations\201412292018182_Initial.Designer.cs">
       <DependentUpon>201412292018182_Initial.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201501281429400_FailedLogins.cs" />
+    <Compile Include="Migrations\201501281429400_FailedLogins.Designer.cs">
+      <DependentUpon>201501281429400_FailedLogins.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -65,6 +76,9 @@
     <EmbeddedResource Include="Migrations\201412292018182_Initial.resx">
       <DependentUpon>201412292018182_Initial.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201501281429400_FailedLogins.resx">
+      <DependentUpon>201501281429400_FailedLogins.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TwilioRegistration.DataTypes\TwilioRegistration.DataTypes.csproj">
@@ -72,9 +86,7 @@
       <Name>TwilioRegistration.DataTypes</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Managers\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

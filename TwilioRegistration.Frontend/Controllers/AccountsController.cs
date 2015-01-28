@@ -4,6 +4,9 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
+using TwilioRegistration.BusinessLogic.Managers;
+using TwilioRegistration.DataTypes;
+using TwilioRegistration.Frontend.Models.Accounts;
 
 namespace TwilioRegistration.Frontend.Controllers
 {
@@ -28,6 +31,13 @@ namespace TwilioRegistration.Frontend.Controllers
         // DELETE api/accounts/5
         public void Delete(int id)
         {
+        }
+
+        [HttpPost]
+        [ActionName("log-in")]
+        public LogInResultDT LogIn([FromBody]LogInVM data)
+        {
+            return AccountsMgr.LogIn(data.Email, data.Password);
         }
     }
 }

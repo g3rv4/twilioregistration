@@ -13,7 +13,7 @@ namespace TwilioRegistration.BusinessLogic.Migrations
                     {
                         Id = c.Int(nullable: false, identity: true),
                         Email = c.String(nullable: false, maxLength: 255),
-                        Password = c.String(nullable: false),
+                        HashedPassword = c.String(nullable: false),
                         Prefix = c.String(nullable: false, maxLength: 25),
                         CreatedAt = c.DateTime(nullable: false),
                         IsActive = c.Boolean(nullable: false),

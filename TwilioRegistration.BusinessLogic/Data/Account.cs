@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TwilioRegistration.BusinessLogic.Helpers;
 
 namespace TwilioRegistration.BusinessLogic.Data
 {
@@ -17,8 +18,17 @@ namespace TwilioRegistration.BusinessLogic.Data
         [MaxLength(255)]
         public string Email { get; set; }
 
+        [NotMapped]
+        public string Password
+        {
+            set
+            {
+                HashedPassword = PasswordHasher.CreateHash(value);
+            }
+        }
+
         [Required]
-        public string Password { get; set; }
+        public string HashedPassword { get; set; }
 
         [Index(IsUnique = true)]
         [Required]
@@ -29,10 +39,19 @@ namespace TwilioRegistration.BusinessLogic.Data
 
         public bool IsActive { get; set; }
 
+        public int FailedLoginAttempts { get; set; }
+
+        public DateTime? ReactivationTime { get; set; }
+
         public int ServerId { get; set; }
 
         public Server Server { get; set; }
 
         public List<Device> Devices { get; set; }
+
+        public bool PasswordMatches(string pwd)
+        {
+            return PasswordHasher.ValidatePassword(pwd, HashedPassword);
+        }
     }
 }
