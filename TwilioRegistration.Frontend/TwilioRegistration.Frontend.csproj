@@ -99,13 +99,17 @@
   <ItemGroup>
     <Content Include="Content\css\bootstrap-theme.min.css" />
     <Content Include="Content\css\bootstrap.min.css" />
+    <Content Include="Content\css\common.css" />
     <Content Include="Content\css\sales.css" />
     <Content Include="Content\fonts\glyphicons-halflings-regular.svg" />
+    <Content Include="Content\html\errors.html" />
+    <Content Include="Content\js\common\modal-errors.js" />
     <Content Include="Content\js\libs\angular-resource.min.js" />
     <Content Include="Content\js\libs\angular-route.min.js" />
     <Content Include="Content\js\libs\angular.min.js" />
     <Content Include="Content\js\libs\ie10-viewport-bug-workaround.js" />
     <Content Include="Content\js\libs\ui-bootstrap-tpls-0.12.0.min.js" />
+    <Content Include="Content\js\models\account-service.js" />
     <Content Include="Content\js\sales\main.js" />
     <Content Include="Global.asax" />
     <Content Include="Web.config" />

@@ -18,47 +18,38 @@ namespace TwilioRegistration.BusinessLogic.Managers
             var res = new LogInResultDT() { Status = LogInStatus.INVALID_USER_PWD };
             using (var context = new Context())
             {
-                var account = context.Accounts.Where(a => a.Email == email).FirstOrDefault();
-                if (account != null)
+                // doing the temporary lock of accounts on redis, so that we even lock non existent ones. This lets us give real users useful feedback, while an attacker would get the temporarily disabled message for every account (not being able to find out which ones exist and which ones don't)
+                int maxFailedLogins = int.Parse(ConfigurationManager.AppSettings["Account.MaxFailedLogins"]);
+
+                int failedLogins = 0;
+                int.TryParse(RedisConnection.Instance.Database.StringGet("failed-logins:" + email), out failedLogins);
+
+                if (failedLogins >= maxFailedLogins)
                 {
+                    res.Status = LogInStatus.TEMPORARILY_DISABLED;
+                    return res;
+                }
+                
+                var account = context.Accounts.Where(a => a.Email == email).FirstOrDefault();
+                if (account != null && account.PasswordMatches(password))
+                {
+                    // verify if the account is active once we know that the user knows their pwd and that their account isn't temporarily disabled
                     if (!account.IsActive)
                     {
                         res.Status = LogInStatus.INACTIVE;
                         return res;
                     }
-                    if (account.ReactivationTime.HasValue)
-                    {
-                        if (account.ReactivationTime.Value < DateTime.UtcNow)
-                        {
-                            account.ReactivationTime = null;
-                            account.FailedLoginAttempts = 0;
-                        }
-                        else
-                        {
-                            res.Status = LogInStatus.TEMPORARILY_DISABLED;
-                            return res;
-                        }
-                    }
-                    if (account.PasswordMatches(password))
-                    {
-                        res.Status = LogInStatus.SUCCESS;
-                        res.Token = System.Guid.NewGuid().ToString();
 
-                        RedisConnection.Instance.Database.StringSetAsync(res.Token, account.Id, TimeSpan.FromSeconds(int.Parse(ConfigurationManager.AppSettings["Account.TokenExpirationSeconds"])));
+                    res.Status = LogInStatus.SUCCESS;
+                    res.Token = System.Guid.NewGuid().ToString();
 
-                        account.FailedLoginAttempts = 0;
-                    }
-                    else
-                    {
-                        account.FailedLoginAttempts++;
-                        int maxFailedLogins = int.Parse(ConfigurationManager.AppSettings["Account.MaxFailedLogins"]);
-                        if (account.FailedLoginAttempts >= maxFailedLogins)
-                        {
-                            int deactivateSeconds = int.Parse(ConfigurationManager.AppSettings["Account.AccountDeactivationSeconds"]);
-                            account.ReactivationTime = DateTime.UtcNow.AddSeconds(deactivateSeconds);
-                        }
-                    }
-                    context.SaveChanges();
+                    int tokenDeactivationSeconds = int.Parse(ConfigurationManager.AppSettings["Account.TokenExpirationSeconds"]);
+                    RedisConnection.Instance.Database.StringSetAsync("token:" + res.Token, account.Id, TimeSpan.FromSeconds(tokenDeactivationSeconds));
+                }
+                else
+                {
+                    int accountDeactivationSeconds = int.Parse(ConfigurationManager.AppSettings["Account.AccountDeactivationSeconds"]);
+                    RedisConnection.Instance.Database.StringSetAsync("failed-logins:" + email, failedLogins + 1, TimeSpan.FromSeconds(accountDeactivationSeconds));
                 }
             }
             return res;

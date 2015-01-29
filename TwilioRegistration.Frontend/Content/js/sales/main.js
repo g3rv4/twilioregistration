@@ -1,15 +1,48 @@
-﻿var LoginCtrl = function ($modal) {
-    this.logIn = function (form, loginData) {
-        if (!form.$valid) {
-            alert('here')
+﻿angular.module('angApp').controller('LoginCtrl', function ($modal, accountService) {
+    var _this = this
+
+    _this.logIn = function (loginForm) {
+        if (loginForm.$valid) {
+            accountService.logIn(_this.email, _this.password).then(
+                function (token) {
+                    alert(token)
+                }, function (reason) {
+                    errors = []
+                    if (isFinite(reason)) {
+                        errors.push('HTTP Error: ' + reason)
+                    } else {
+                        switch (reason) {
+                            case 'INVALID_USER_PWD': reason = 'Invalid email or password'; break
+                            case 'INACTIVE': reason = 'Your account is inactive'; break
+                            case 'TEMPORARILY_DISABLED': reason = 'Your account has been temporarily disabled due to many unsuccessful login attempts. Try again later.'; break
+                            default: reason = 'Unknown code: ' + reason
+                        }
+                        errors.push(reason)
+                    }
+                    _this.showErrors(errors)
+                }
+            )
+        }
+        else
+        {
+            errors = []
+            if (loginForm.email.$error.required) {
+                errors.push('The email is required')
+            } else if (loginForm.email.$error.email) {
+                errors.push('The email entered is invalid')
+            }
+            if (loginForm.password.$error.required) {
+                errors.push('The password is required')
+            }
+            _this.showErrors(errors)
         }
     }
 
-    this.showErrors = function (errors, $modal) {
+    _this.showErrors = function (errors) {
         var modalInstance = $modal.open({
-            templateUrl: 'myModalContent.html',
+            templateUrl: '/html/errors.html',
             controller: 'ModalInstanceCtrl',
-            size: size,
+            controllerAs: 'ctrl',
             resolve: {
                 errors: function () {
                     return errors;
@@ -17,43 +50,10 @@
             }
         });
 
-        modalInstance.result.then(function (selectedItem) {
-            this.password = ''
-        });
+        onclose = function () {
+            _this.password = ''
+        }
+
+        modalInstance.result.then(onclose, onclose);
     }
-};
-
-LoginCtrl.$inject = ['$modal'];
-
-angular.module('angApp').controller('LoginCtrl', LoginCtrl);
-
-
-
-
-
-
-
-angular.module('angApp').controller('ModalDemoCtrl', function ($scope, $modal, $log) {
-
-    $scope.items = ['item1', 'item2', 'item3'];
-
-    $scope.open = function (size) {
-
-    };
-});
-
-angular.module('angApp').controller('ModalInstanceCtrl', function ($scope, $modalInstance, items) {
-
-    $scope.items = items;
-    $scope.selected = {
-        item: $scope.items[0]
-    };
-
-    $scope.ok = function () {
-        $modalInstance.close($scope.selected.item);
-    };
-
-    $scope.cancel = function () {
-        $modalInstance.dismiss('cancel');
-    };
 });

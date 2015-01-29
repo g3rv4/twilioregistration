@@ -11,15 +11,21 @@
     <title>Twilio SIP Registration</title>
 
     <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/css/sales.css" rel="stylesheet">
+    <link href="/css/common.css" rel="stylesheet">
 
     @RenderSection("css", false)
 
     <script src="/js/libs/angular.min.js"></script>
+    <script src="/js/libs/angular-resource.min.js"></script>
     <script src="/js/libs/ui-bootstrap-tpls-0.12.0.min.js"></script>
     <script>
-        angular.module('angApp', ['ui.bootstrap'])
+        angular.module('angApp', ['ui.bootstrap', 'ngResource'])
+        .constant('baseUrl', '@Html.Raw(Request.Url.Scheme + "://" + Request.Url.Host + "/api/")')
     </script>
     <script src="/js/sales/main.js"></script>
+    <script src="/js/common/modal-errors.js"></script>
+    <script src="/js/models/account-service.js"></script>
     @RenderSection("js", false)
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
@@ -35,12 +41,12 @@
                 <a class="navbar-brand" href="/">Twilio SIP Registration</a>
             </div>
             <div id="navbar" class="navbar-collapse collapse" ng-controller="LoginCtrl as ctrl">
-                <form name="loginForm" class="navbar-form navbar-right" novalidate ng-submit="ctrl.logIn(loginForm, loginData)">
+                <form name="loginForm" class="navbar-form navbar-right" novalidate ng-submit="ctrl.logIn(loginForm)">
                     <div class="form-group">
-                        <input type="email" placeholder="Email" class="form-control" ng-model="loginData.email" required>
+                        <input type="email" name="email" placeholder="Email" class="form-control" ng-model="ctrl.email" required>
                     </div>
                     <div class="form-group">
-                        <input type="password" placeholder="Password" class="form-control" ng-model="loginData.password" required>
+                        <input type="password" name="password" placeholder="Password" class="form-control" ng-model="ctrl.password" required>
                     </div>
                     <button type="submit" class="btn btn-success">Sign in</button>
                     <button type="submit" class="btn btn-info">Reset Password</button>

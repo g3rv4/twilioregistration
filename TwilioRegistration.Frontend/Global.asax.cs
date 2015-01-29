@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using System.Web.Routing;
 using System.Web.Http;
 using Newtonsoft.Json;
+using TwilioRegistration.BusinessLogic.Helpers;
 
 namespace TwilioRegistration.Frontend
 {
@@ -17,6 +18,9 @@ namespace TwilioRegistration.Frontend
             AreaRegistration.RegisterAllAreas();
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             SerializeSettings(GlobalConfiguration.Configuration);
+
+            //have it initiate the connection
+            var a = RedisConnection.Instance;
         }
 
         void SerializeSettings(HttpConfiguration config)

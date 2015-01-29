@@ -64,6 +64,10 @@
     <Compile Include="Migrations\201501281429400_FailedLogins.Designer.cs">
       <DependentUpon>201501281429400_FailedLogins.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201501291959234_Temporarily_Disabling_Accounts_On_Redis.cs" />
+    <Compile Include="Migrations\201501291959234_Temporarily_Disabling_Accounts_On_Redis.Designer.cs">
+      <DependentUpon>201501291959234_Temporarily_Disabling_Accounts_On_Redis.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Data\Server.cs" />
@@ -78,6 +82,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201501281429400_FailedLogins.resx">
       <DependentUpon>201501281429400_FailedLogins.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201501291959234_Temporarily_Disabling_Accounts_On_Redis.resx">
+      <DependentUpon>201501291959234_Temporarily_Disabling_Accounts_On_Redis.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

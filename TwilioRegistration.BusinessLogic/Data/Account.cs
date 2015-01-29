@@ -39,10 +39,6 @@ namespace TwilioRegistration.BusinessLogic.Data
 
         public bool IsActive { get; set; }
 
-        public int FailedLoginAttempts { get; set; }
-
-        public DateTime? ReactivationTime { get; set; }
-
         public int ServerId { get; set; }
 
         public Server Server { get; set; }
