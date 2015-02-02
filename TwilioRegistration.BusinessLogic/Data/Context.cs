@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace TwilioRegistration.BusinessLogic.Data
 {
-    internal class Context : DbContext
+    public class Context : DbContext
     {
         public Context() : base("name=DbConnectionString") { }
 
@@ -16,6 +16,26 @@ namespace TwilioRegistration.BusinessLogic.Data
         {
             modelBuilder.Conventions.Remove<ManyToManyCascadeDeleteConvention>();
             modelBuilder.Conventions.Remove<OneToManyCascadeDeleteConvention>();
+
+            modelBuilder.Entity<Account>()
+                .HasMany(x => x.Roles)
+                .WithMany(x => x.Accounts)
+            .Map(x =>
+            {
+                x.ToTable("AccountsRoles");
+                x.MapLeftKey("AccountId");
+                x.MapRightKey("RoleId");
+            });
+
+            modelBuilder.Entity<Role>()
+                .HasMany(x => x.Permissions)
+                .WithMany(x => x.Roles)
+            .Map(x =>
+            {
+                x.ToTable("RolesPermissions");
+                x.MapLeftKey("RoleId");
+                x.MapRightKey("PermissionId");
+            });
 
             base.OnModelCreating(modelBuilder);
         }

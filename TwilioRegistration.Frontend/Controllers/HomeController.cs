@@ -12,5 +12,10 @@ namespace TwilioRegistration.Frontend.Controllers
         {
             return View();
         }
+
+        public ActionResult ControlPanel()
+        {
+            return View();
+        }
 	}
 }

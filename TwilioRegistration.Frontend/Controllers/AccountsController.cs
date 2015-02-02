@@ -10,27 +10,12 @@ using TwilioRegistration.Frontend.Models.Accounts;
 
 namespace TwilioRegistration.Frontend.Controllers
 {
-    public class AccountsController : ApiController
+    public class AccountsController : BaseApiController
     {
-        // GET api/accounts/5
-        public string Get(int id)
+        [Authorize]
+        public IEnumerable<AccountDT> Get()
         {
-            return "value";
-        }
-
-        // POST api/accounts
-        public void Post([FromBody]string value)
-        {
-        }
-
-        // PUT api/accounts/5
-        public void Put(int id, [FromBody]string value)
-        {
-        }
-
-        // DELETE api/accounts/5
-        public void Delete(int id)
-        {
+            return AccountsMgr.GetAccountsForUser(_AccountId);
         }
 
         [HttpPost]

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
+using TwilioRegistration.Frontend.Utils;
 
 namespace TwilioRegistration.Frontend
 {
@@ -21,9 +22,10 @@ namespace TwilioRegistration.Frontend
             config.Routes.MapHttpRoute(
                 name: "ActionApi",
                 routeTemplate: "api/{controller}/{action}/{id}",
-                defaults: new { id = RouteParameter.Optional },
-                constraints: new { id = @"\d*" }
+                defaults: new { id = RouteParameter.Optional }
             );
+
+            config.MessageHandlers.Add(new AuthenticationHandler());
         }
     }
 }

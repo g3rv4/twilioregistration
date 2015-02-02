@@ -9,7 +9,7 @@ using TwilioRegistration.DataTypes.Enums;
 
 namespace TwilioRegistration.BusinessLogic.Data
 {
-    internal class Device
+    public class Device
     {
         public int Id { get; set; }
 
@@ -29,6 +29,6 @@ namespace TwilioRegistration.BusinessLogic.Data
         [Index("IX_UsernameAccount", 2, IsUnique = true)]
         public int AccountId { get; set; }
 
-        public Account Account { get; set; }
+        public virtual Account Account { get; set; }
     }
 }

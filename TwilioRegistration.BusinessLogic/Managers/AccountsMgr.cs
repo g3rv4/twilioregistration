@@ -54,5 +54,64 @@ namespace TwilioRegistration.BusinessLogic.Managers
             }
             return res;
         }
+
+        public static AccountDT GetAccount(string token)
+        {
+            AccountDT res = null;
+            int accountId;
+            if (int.TryParse(RedisConnection.Instance.Database.StringGet("token:" + token), out accountId))
+            {
+                using (var context = new Context())
+                {
+                    var account = context.Accounts.Where(a => a.Id == accountId).FirstOrDefault();
+                    if (account != null)
+                    {
+                        int tokenDeactivationSeconds = int.Parse(ConfigurationManager.AppSettings["Account.TokenExpirationSeconds"]);
+                        RedisConnection.Instance.Database.KeyExpire("token:" + token, TimeSpan.FromSeconds(tokenDeactivationSeconds));
+                        return account.GetDT();
+                    }
+                }
+            }
+            return res;
+        }
+
+        public static AccountDT GetAccount(int accountId, bool includeRoles = false)
+        {
+            using (var context = new Context())
+            {
+                var account = context.Accounts.Where(a => a.Id == accountId).FirstOrDefault();
+                if (account != null)
+                {
+                    return account.GetDT(includeRoles);
+                }
+            }
+            return null;
+        }
+
+        public static IEnumerable<AccountDT> GetAccountsForUser(int accountId)
+        {
+            using (var context = new Context())
+            {
+                var accounts = context.Accounts.Where(a => a.IsActive);
+                if (!HasPermission(accountId, "view-all-accounts", context))
+                {
+                    accounts = accounts.Where(a => a.Id == accountId);
+                }
+                return accounts.ToList().Select(a => a.GetDT()).ToList();
+            }
+        }
+
+        public static bool HasPermission(int accountId, string permission)
+        {
+            using (var context = new Context())
+            {
+                return HasPermission(accountId, permission, context);
+            }
+        }
+
+        internal static bool HasPermission(int accountId, string permission, Context context)
+        {
+            return context.Accounts.Where(a => a.Id == accountId).Any(a => a.Roles.Any(r => r.Permissions.Any(p => p.CodeName == permission)));
+        }
     }
 }

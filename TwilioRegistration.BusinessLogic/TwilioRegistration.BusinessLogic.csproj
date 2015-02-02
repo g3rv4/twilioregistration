@@ -53,6 +53,8 @@
     <Compile Include="Data\Account.cs" />
     <Compile Include="Data\Context.cs" />
     <Compile Include="Data\Device.cs" />
+    <Compile Include="Data\Permission.cs" />
+    <Compile Include="Data\Role.cs" />
     <Compile Include="Helpers\PasswordHasher.cs" />
     <Compile Include="Helpers\RedisConnection.cs" />
     <Compile Include="Managers\AccountsMgr.cs" />
@@ -67,6 +69,14 @@
     <Compile Include="Migrations\201501291959234_Temporarily_Disabling_Accounts_On_Redis.cs" />
     <Compile Include="Migrations\201501291959234_Temporarily_Disabling_Accounts_On_Redis.Designer.cs">
       <DependentUpon>201501291959234_Temporarily_Disabling_Accounts_On_Redis.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201502021632307_Roles.cs" />
+    <Compile Include="Migrations\201502021632307_Roles.Designer.cs">
+      <DependentUpon>201502021632307_Roles.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201502021824589_AccountName.cs" />
+    <Compile Include="Migrations\201502021824589_AccountName.Designer.cs">
+      <DependentUpon>201502021824589_AccountName.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -85,6 +95,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201501291959234_Temporarily_Disabling_Accounts_On_Redis.resx">
       <DependentUpon>201501291959234_Temporarily_Disabling_Accounts_On_Redis.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201502021632307_Roles.resx">
+      <DependentUpon>201502021632307_Roles.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201502021824589_AccountName.resx">
+      <DependentUpon>201502021824589_AccountName.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

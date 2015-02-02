@@ -18,6 +18,12 @@ namespace TwilioRegistration.Frontend
                 url: "",
                 defaults: new { controller = "Home", action = "Index" }
             );
+
+            routes.MapRoute(
+                name: "ControlPanel",
+                url: "control-panel/{*anything}",
+                defaults: new { controller = "Home", action = "ControlPanel" }
+            );
         }
     }
 }
