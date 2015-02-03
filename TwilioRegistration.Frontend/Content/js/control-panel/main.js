@@ -60,7 +60,7 @@
             }
         });
 
-        $http.defaults.headers.common.Authorization = 'gmc-auth ' + $window.sessionStorage.token
+        $http.defaults.headers.common.Authorization = 'Bearer ' + $window.sessionStorage.token
     });
 
 

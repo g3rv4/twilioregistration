@@ -1,6 +1,8 @@
-﻿using System;
+﻿using Newtonsoft.Json.Serialization;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Formatting;
 using System.Web.Http;
 using TwilioRegistration.Frontend.Utils;
 
@@ -25,7 +27,11 @@ namespace TwilioRegistration.Frontend
                 defaults: new { id = RouteParameter.Optional }
             );
 
-            config.MessageHandlers.Add(new AuthenticationHandler());
+            var jsonFormatter = config.Formatters.OfType<JsonMediaTypeFormatter>().First();
+            jsonFormatter.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+            jsonFormatter.SerializerSettings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
+
+            config.Filters.Add(new TokenValidationAttribute());
         }
     }
 }

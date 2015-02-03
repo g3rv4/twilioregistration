@@ -1,20 +1,21 @@
 ﻿(function () {
     app.factory('accountService', function ($resource, $http, $q, $log, baseUrl) {
-        resource = $resource(baseUrl + 'accounts/:id', { id: "@Id" }, null, {stripTrailingSlashes: false})
+        resource = $resource(baseUrl + 'accounts/:id', { id: "@id" }, null, {stripTrailingSlashes: false})
         return {
             logIn: function (email, password) {
                 var deferred = $q.defer()
-                $http.post(baseUrl + 'accounts/log-in', { 'Email': email, 'Password': password })
-                    .success(function (response) {
-                        if (response.Status == 'SUCCESS') {
-                            deferred.resolve(response.Token)
-                        } else {
-                            deferred.reject(response.Status)
-                        }
+                data = "grant_type=password&username=" + email + "&password=" + password;
+                $http.post(baseUrl + 'token', data, { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } })
+                    .success(function (response, status) {
+                        deferred.resolve(response.access_token)
                     })
                     .error(function (data, code, headers, config, status) {
-                        $log.error('Code: ' + code + '\nData: ' + data + '\nStatus: ' + status)
-                        deferred.reject(code)
+                        if (data.error) {
+                            deferred.reject(data.error)
+                        } else {
+                            $log.error('Code: ' + code + '\nData: ' + data + '\nStatus: ' + status)
+                            deferred.reject(code)
+                        }
                     })
                 return deferred.promise
             },

@@ -55,24 +55,16 @@ namespace TwilioRegistration.BusinessLogic.Managers
             return res;
         }
 
-        public static AccountDT GetAccount(string token)
+        public static int? GetAccountId(string token)
         {
-            AccountDT res = null;
             int accountId;
             if (int.TryParse(RedisConnection.Instance.Database.StringGet("token:" + token), out accountId))
             {
-                using (var context = new Context())
-                {
-                    var account = context.Accounts.Where(a => a.Id == accountId).FirstOrDefault();
-                    if (account != null)
-                    {
-                        int tokenDeactivationSeconds = int.Parse(ConfigurationManager.AppSettings["Account.TokenExpirationSeconds"]);
-                        RedisConnection.Instance.Database.KeyExpire("token:" + token, TimeSpan.FromSeconds(tokenDeactivationSeconds));
-                        return account.GetDT();
-                    }
-                }
+                int tokenDeactivationSeconds = int.Parse(ConfigurationManager.AppSettings["Account.TokenExpirationSeconds"]);
+                RedisConnection.Instance.Database.KeyExpire("token:" + token, TimeSpan.FromSeconds(tokenDeactivationSeconds));
+                return accountId;
             }
-            return res;
+            return null;
         }
 
         public static AccountDT GetAccount(int accountId, bool includeRoles = false)
