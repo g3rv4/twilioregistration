@@ -26,8 +26,7 @@ namespace TwilioRegistration.BusinessLogic.Data
         {
             return new ServerDT() { 
                 Id = Id,
-                Ip = Ip,
-                AcceptsRegistrations = AcceptsRegistrations 
+                Ip = Ip
             };
         }
     }

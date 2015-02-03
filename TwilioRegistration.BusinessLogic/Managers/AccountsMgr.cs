@@ -89,30 +89,20 @@ namespace TwilioRegistration.BusinessLogic.Managers
             }
         }
 
-        public static IEnumerable<AccountDT> GetAccountsForUser(int accountId)
+        public static List<string> GetPermissions(int accountId)
         {
             using (var context = new Context())
             {
-                var accounts = context.Accounts.Where(a => a.IsActive);
-                if (!HasPermission(accountId, "view-all-accounts", context))
-                {
-                    accounts = accounts.Where(a => a.Id == accountId);
-                }
-                return accounts.ToList().Select(a => a.GetDT()).ToList();
+                return context.Permissions.Where(p => p.Roles.Any(r => r.Accounts.Any(a => a.Id == accountId))).Select(p => p.CodeName).ToList();
             }
         }
 
-        public static bool HasPermission(int accountId, string permission)
+        public static IEnumerable<AccountDT> GetAccounts()
         {
             using (var context = new Context())
             {
-                return HasPermission(accountId, permission, context);
+                return context.Accounts.Where(a => a.IsActive).ToList().Select(a => a.GetDT()).ToList();
             }
-        }
-
-        internal static bool HasPermission(int accountId, string permission, Context context)
-        {
-            return context.Accounts.Where(a => a.Id == accountId).Any(a => a.Roles.Any(r => r.Permissions.Any(p => p.CodeName == permission)));
         }
     }
 }

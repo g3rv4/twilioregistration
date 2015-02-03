@@ -11,7 +11,5 @@ namespace TwilioRegistration.DataTypes
         public int Id { get; set; }
 
         public string Ip { get; set; }
-
-        public bool AcceptsRegistrations { get; set; }
     }
 }

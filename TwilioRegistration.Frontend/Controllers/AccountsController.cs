@@ -6,23 +6,25 @@ using System.Net.Http;
 using System.Web.Http;
 using TwilioRegistration.BusinessLogic.Managers;
 using TwilioRegistration.DataTypes;
-using TwilioRegistration.Frontend.Models.Accounts;
+using TwilioRegistration.Frontend.Utils;
 
 namespace TwilioRegistration.Frontend.Controllers
 {
+    [ClaimsAuthorizeAttribute]
+    [RoutePrefix("api/accounts")]
     public class AccountsController : BaseApiController
     {
-        [Authorize]
+        [ClaimsAuthorize("permission", "view-all-accounts")]
         public IEnumerable<AccountDT> Get()
         {
-            return AccountsMgr.GetAccountsForUser(_AccountId);
+            return AccountsMgr.GetAccounts();
         }
 
-        [HttpPost]
-        [ActionName("log-in")]
-        public LogInResultDT LogIn([FromBody]LogInVM data)
+        [HttpGet]
+        [Route("current")]
+        public AccountDT CurrentAccountId()
         {
-            return AccountsMgr.LogIn(data.Email, data.Password);
+            return AccountsMgr.GetAccount(_AccountId);
         }
     }
 }

@@ -1,6 +1,12 @@
 ﻿(function () {
     app.factory('accountService', function ($resource, $http, $q, $log, baseUrl) {
-        resource = $resource(baseUrl + 'accounts/:id', { id: "@id" }, null, {stripTrailingSlashes: false})
+        resource = $resource(baseUrl + 'accounts/:id', { id: "@id" }, {
+            current: {
+                method: 'GET',
+                url: baseUrl + 'accounts/current',
+                isArray: false
+            }
+        })
         return {
             logIn: function (email, password) {
                 var deferred = $q.defer()

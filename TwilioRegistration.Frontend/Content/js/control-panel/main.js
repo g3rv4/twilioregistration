@@ -57,9 +57,9 @@
         }
 
         _this.refresh = function ($route) {
-            var query = accountService.resource.query()
+            var query = accountService.resource.current()
             query.$promise.then(function (result) {
-                _this.account = result[0]
+                _this.account = result
             });
         }
 

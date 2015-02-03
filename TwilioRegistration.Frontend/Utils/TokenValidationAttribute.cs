@@ -30,16 +30,17 @@ namespace TwilioRegistration.Frontend.Utils
                     if (context.Request.Headers.Any(h => h.Key == "Acting-As"))
                     {
                         var actingAs = context.Request.Headers.GetValues("Acting-As").FirstOrDefault();
-                        if (actingAs != null && AccountsMgr.HasPermission(accountId, "act-as"))
+                        if (actingAs != null && identity.HasClaim("permission", "act-as"))
                         {
                             if (int.TryParse(actingAs, out accountId))
                             {
-                                //refresh the roles with the user's
-                                foreach (var currentClaim in identity.Claims.Where(c => c.Type == "role").ToList())
+                                //refresh the roles and permissions with the user's
+                                foreach (var currentClaim in identity.Claims.Where(c => c.Type == "role" || c.Type == "permission").ToList())
                                 {
                                     identity.RemoveClaim(currentClaim);
                                 }
                                 identity.AddClaims(AccountsMgr.GetRoles(accountId).Select(r => new Claim("role", r)));
+                                identity.AddClaims(AccountsMgr.GetPermissions(accountId).Select(p => new Claim("permission", p)));
                             }
                         }
                     }

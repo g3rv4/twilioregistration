@@ -153,9 +153,9 @@
     <Compile Include="Controllers\AccountsController.cs" />
     <Compile Include="Controllers\BaseApiController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
-    <Compile Include="Models\Accounts\LogInVM.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
+    <Compile Include="Utils\ClaimsAuthorizeAttribute.cs" />
     <Compile Include="Utils\TokenValidationAttribute.cs" />
     <Compile Include="Utils\TWRAuthorizationServerProvider.cs" />
   </ItemGroup>
@@ -186,6 +186,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Models\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TwilioRegistration.BusinessLogic\TwilioRegistration.BusinessLogic.csproj">

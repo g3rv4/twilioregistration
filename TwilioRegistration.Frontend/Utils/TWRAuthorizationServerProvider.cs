@@ -25,6 +25,7 @@ namespace TwilioRegistration.Frontend.Utils
                 var identity = new ClaimsIdentity(context.Options.AuthenticationType, "accountId", "role");
                 identity.AddClaim(new Claim("token", loginResult.Token));
                 identity.AddClaims(AccountsMgr.GetRoles(loginResult.AccountId.Value).Select(r => new Claim("role", r)));
+                identity.AddClaims(AccountsMgr.GetPermissions(loginResult.AccountId.Value).Select(p => new Claim("permission", p)));
                 context.Validated(identity);
             }
             else
