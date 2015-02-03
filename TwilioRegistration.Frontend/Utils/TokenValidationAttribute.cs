@@ -20,7 +20,7 @@ namespace TwilioRegistration.Frontend.Utils
             var claim = identity.Claims.Where(c => c.Type == "token").FirstOrDefault();
             if (claim != null)
             {
-                var realAccountId = AccountsMgr.GetAccountId(claim.Value);
+                var realAccountId = await AccountsMgr.GetAccountIdAsync(claim.Value);
                 if (realAccountId.HasValue)
                 {
                     var accountId = realAccountId.Value;
@@ -39,8 +39,8 @@ namespace TwilioRegistration.Frontend.Utils
                                 {
                                     identity.RemoveClaim(currentClaim);
                                 }
-                                identity.AddClaims(AccountsMgr.GetRoles(accountId).Select(r => new Claim("role", r)));
-                                identity.AddClaims(AccountsMgr.GetPermissions(accountId).Select(p => new Claim("permission", p)));
+                                identity.AddClaims((await AccountsMgr.GetRolesAsync(accountId)).Select(r => new Claim("role", r)));
+                                identity.AddClaims((await AccountsMgr.GetPermissionsAsync(accountId)).Select(p => new Claim("permission", p)));
                             }
                         }
                     }

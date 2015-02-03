@@ -2,18 +2,20 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
+using System.Data.Entity;
 using System.Text;
 using System.Threading.Tasks;
 using TwilioRegistration.BusinessLogic.Data;
 using TwilioRegistration.BusinessLogic.Helpers;
 using TwilioRegistration.DataTypes;
 using TwilioRegistration.DataTypes.Enums;
+using StackExchange.Redis;
 
 namespace TwilioRegistration.BusinessLogic.Managers
 {
     public static class AccountsMgr
     {
-        public static LogInResultDT LogIn(string email, string password)
+        public static async Task<LogInResultDT> LogInAsync(string email, string password)
         {
             var res = new LogInResultDT() { Status = LogInStatus.INVALID_USER_PWD };
             using (var context = new Context())
@@ -22,7 +24,7 @@ namespace TwilioRegistration.BusinessLogic.Managers
                 int maxFailedLogins = int.Parse(ConfigurationManager.AppSettings["Account.MaxFailedLogins"]);
 
                 int failedLogins = 0;
-                int.TryParse(RedisConnection.Instance.Database.StringGet("failed-logins:" + email), out failedLogins);
+                int.TryParse(await RedisConnection.Instance.Database.StringGetAsync("failed-logins:" + email), out failedLogins);
 
                 if (failedLogins >= maxFailedLogins)
                 {
@@ -30,7 +32,7 @@ namespace TwilioRegistration.BusinessLogic.Managers
                     return res;
                 }
                 
-                var account = context.Accounts.Where(a => a.Email == email).FirstOrDefault();
+                var account = await context.Accounts.Where(a => a.Email == email).FirstOrDefaultAsync();
                 if (account != null && account.PasswordMatches(password))
                 {
                     // verify if the account is active once we know that the user knows their pwd and that their account isn't temporarily disabled
@@ -45,34 +47,34 @@ namespace TwilioRegistration.BusinessLogic.Managers
                     res.AccountId = account.Id;
 
                     int tokenDeactivationSeconds = int.Parse(ConfigurationManager.AppSettings["Account.TokenExpirationSeconds"]);
-                    RedisConnection.Instance.Database.StringSetAsync("token:" + res.Token, account.Id, TimeSpan.FromSeconds(tokenDeactivationSeconds));
+                    RedisConnection.Instance.Database.StringSet("token:" + res.Token, account.Id, TimeSpan.FromSeconds(tokenDeactivationSeconds), flags: CommandFlags.FireAndForget);
                 }
                 else
                 {
                     int accountDeactivationSeconds = int.Parse(ConfigurationManager.AppSettings["Account.AccountDeactivationSeconds"]);
-                    RedisConnection.Instance.Database.StringSetAsync("failed-logins:" + email, failedLogins + 1, TimeSpan.FromSeconds(accountDeactivationSeconds));
+                    RedisConnection.Instance.Database.StringSet("failed-logins:" + email, failedLogins + 1, TimeSpan.FromSeconds(accountDeactivationSeconds), flags: CommandFlags.FireAndForget);
                 }
             }
             return res;
         }
 
-        public static int? GetAccountId(string token)
+        public static async Task<int?> GetAccountIdAsync(string token)
         {
             int accountId;
             if (int.TryParse(RedisConnection.Instance.Database.StringGet("token:" + token), out accountId))
             {
                 int tokenDeactivationSeconds = int.Parse(ConfigurationManager.AppSettings["Account.TokenExpirationSeconds"]);
-                RedisConnection.Instance.Database.KeyExpire("token:" + token, TimeSpan.FromSeconds(tokenDeactivationSeconds));
+                await RedisConnection.Instance.Database.KeyExpireAsync("token:" + token, TimeSpan.FromSeconds(tokenDeactivationSeconds));
                 return accountId;
             }
             return null;
         }
 
-        public static AccountDT GetAccount(int accountId)
+        public static async Task<AccountDT> GetAccountAsync(int accountId)
         {
             using (var context = new Context())
             {
-                var account = context.Accounts.Where(a => a.Id == accountId).FirstOrDefault();
+                var account = await context.Accounts.Where(a => a.Id == accountId).FirstOrDefaultAsync();
                 if (account != null)
                 {
                     return account.GetDT();
@@ -81,27 +83,27 @@ namespace TwilioRegistration.BusinessLogic.Managers
             return null;
         }
 
-        public static List<string> GetRoles(int accountId)
+        public static async Task<List<string>> GetRolesAsync(int accountId)
         {
             using (var context = new Context())
             {
-                return context.Roles.Where(r => r.Accounts.Any(a => a.Id == accountId)).Select(r => r.Name).ToList();
+                return await context.Roles.Where(r => r.Accounts.Any(a => a.Id == accountId)).Select(r => r.Name).ToListAsync();
             }
         }
 
-        public static List<string> GetPermissions(int accountId)
+        public static async Task<List<string>> GetPermissionsAsync(int accountId)
         {
             using (var context = new Context())
             {
-                return context.Permissions.Where(p => p.Roles.Any(r => r.Accounts.Any(a => a.Id == accountId))).Select(p => p.CodeName).ToList();
+                return await context.Permissions.Where(p => p.Roles.Any(r => r.Accounts.Any(a => a.Id == accountId))).Select(p => p.CodeName).ToListAsync();
             }
         }
 
-        public static IEnumerable<AccountDT> GetAccounts()
+        public static async Task<IEnumerable<AccountDT>> GetAccountsAsync()
         {
             using (var context = new Context())
             {
-                return context.Accounts.Where(a => a.IsActive).ToList().Select(a => a.GetDT()).ToList();
+                return (await context.Accounts.Where(a => a.IsActive).ToListAsync()).Select(a => a.GetDT()).ToList();
             }
         }
     }

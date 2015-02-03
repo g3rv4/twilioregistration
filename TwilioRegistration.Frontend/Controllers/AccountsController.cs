@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Threading.Tasks;
 using System.Web.Http;
 using TwilioRegistration.BusinessLogic.Managers;
 using TwilioRegistration.DataTypes;
@@ -15,16 +16,16 @@ namespace TwilioRegistration.Frontend.Controllers
     public class AccountsController : BaseApiController
     {
         [ClaimsAuthorize("permission", "view-all-accounts")]
-        public IEnumerable<AccountDT> Get()
+        public async Task<IEnumerable<AccountDT>> Get()
         {
-            return AccountsMgr.GetAccounts();
+            return await AccountsMgr.GetAccountsAsync();
         }
 
         [HttpGet]
         [Route("current")]
-        public AccountDT CurrentAccountId()
+        public async Task<AccountDT> CurrentAccountId()
         {
-            return AccountsMgr.GetAccount(_AccountId);
+            return await AccountsMgr.GetAccountAsync(_AccountId);
         }
     }
 }
