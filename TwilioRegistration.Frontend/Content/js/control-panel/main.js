@@ -68,7 +68,7 @@
         _this.refresh()
     });
 
-    app.controller('DashboardCtrl', function (token) {
+    app.controller('DashboardCtrl', function () {
         var _this = this
     });
 
