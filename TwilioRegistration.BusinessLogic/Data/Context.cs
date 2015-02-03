@@ -42,6 +42,8 @@ namespace TwilioRegistration.BusinessLogic.Data
 
         public DbSet<Account> Accounts { get; set; }
 
+        public DbSet<Role> Roles { get; set; }
+
         public DbSet<Server> Servers { get; set; }
 
         public DbSet<Device> Devices { get; set; }

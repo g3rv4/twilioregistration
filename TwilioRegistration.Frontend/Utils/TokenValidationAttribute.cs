@@ -16,11 +16,40 @@ namespace TwilioRegistration.Frontend.Utils
         public async System.Threading.Tasks.Task AuthenticateAsync(HttpAuthenticationContext context, System.Threading.CancellationToken cancellationToken)
         {
             // Even if a token is valid from the OAuth perspective, I want to verify that's still active
-
-            string token = ((ClaimsIdentity)context.Principal.Identity).Claims.Where(c => c.Type == "token").FirstOrDefault().Value;
-            if (token != null && !AccountsMgr.GetAccountId(token).HasValue)
+            var identity = (ClaimsIdentity)context.Principal.Identity;
+            var claim = identity.Claims.Where(c => c.Type == "token").FirstOrDefault();
+            if (claim != null)
             {
-                context.ErrorResult = new UnauthorizedResult(new AuthenticationHeaderValue[0], context.Request);
+                var realAccountId = AccountsMgr.GetAccountId(claim.Value);
+                if (realAccountId.HasValue)
+                {
+                    var accountId = realAccountId.Value;
+
+                    identity.AddClaim(new Claim("realAccountId", accountId.ToString()));
+                    
+                    if (context.Request.Headers.Any(h => h.Key == "Acting-As"))
+                    {
+                        var actingAs = context.Request.Headers.GetValues("Acting-As").FirstOrDefault();
+                        if (actingAs != null && AccountsMgr.HasPermission(accountId, "act-as"))
+                        {
+                            if (int.TryParse(actingAs, out accountId))
+                            {
+                                //refresh the roles with the user's
+                                foreach (var currentClaim in identity.Claims.Where(c => c.Type == "role").ToList())
+                                {
+                                    identity.RemoveClaim(currentClaim);
+                                }
+                                identity.AddClaims(AccountsMgr.GetRoles(accountId).Select(r => new Claim("role", r)));
+                            }
+                        }
+                    }
+
+                    identity.AddClaim(new Claim("accountId", accountId.ToString()));
+                }
+                else
+                {
+                    context.ErrorResult = new UnauthorizedResult(new AuthenticationHeaderValue[0], context.Request);
+                }
             }
         }
 

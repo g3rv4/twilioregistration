@@ -22,8 +22,9 @@ namespace TwilioRegistration.Frontend.Utils
             var loginResult = AccountsMgr.LogIn(context.UserName, context.Password);
             if (loginResult.Status == LogInStatus.SUCCESS)
             {
-                var identity = new ClaimsIdentity(context.Options.AuthenticationType);
+                var identity = new ClaimsIdentity(context.Options.AuthenticationType, "accountId", "role");
                 identity.AddClaim(new Claim("token", loginResult.Token));
+                identity.AddClaims(AccountsMgr.GetRoles(loginResult.AccountId.Value).Select(r => new Claim("role", r)));
                 context.Validated(identity);
             }
             else

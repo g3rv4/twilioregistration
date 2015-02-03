@@ -11,5 +11,7 @@ namespace TwilioRegistration.DataTypes
         public LogInStatus Status { get; set; }
 
         public string Token { get; set; }
+
+        public int? AccountId { get; set; }
     }
 }

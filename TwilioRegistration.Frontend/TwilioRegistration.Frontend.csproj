@@ -158,7 +158,6 @@
     <Compile Include="Startup.cs" />
     <Compile Include="Utils\TokenValidationAttribute.cs" />
     <Compile Include="Utils\TWRAuthorizationServerProvider.cs" />
-    <Compile Include="Utils\TWRRoleProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\web.config" />

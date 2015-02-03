@@ -42,6 +42,7 @@ namespace TwilioRegistration.BusinessLogic.Managers
 
                     res.Status = LogInStatus.SUCCESS;
                     res.Token = System.Guid.NewGuid().ToString();
+                    res.AccountId = account.Id;
 
                     int tokenDeactivationSeconds = int.Parse(ConfigurationManager.AppSettings["Account.TokenExpirationSeconds"]);
                     RedisConnection.Instance.Database.StringSetAsync("token:" + res.Token, account.Id, TimeSpan.FromSeconds(tokenDeactivationSeconds));
@@ -67,17 +68,25 @@ namespace TwilioRegistration.BusinessLogic.Managers
             return null;
         }
 
-        public static AccountDT GetAccount(int accountId, bool includeRoles = false)
+        public static AccountDT GetAccount(int accountId)
         {
             using (var context = new Context())
             {
                 var account = context.Accounts.Where(a => a.Id == accountId).FirstOrDefault();
                 if (account != null)
                 {
-                    return account.GetDT(includeRoles);
+                    return account.GetDT();
                 }
             }
             return null;
+        }
+
+        public static List<string> GetRoles(int accountId)
+        {
+            using (var context = new Context())
+            {
+                return context.Roles.Where(r => r.Accounts.Any(a => a.Id == accountId)).Select(r => r.Name).ToList();
+            }
         }
 
         public static IEnumerable<AccountDT> GetAccountsForUser(int accountId)

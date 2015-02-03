@@ -23,7 +23,5 @@ namespace TwilioRegistration.DataTypes
         public bool IsActive { get; set; }
 
         public ServerDT Server { get; set; }
-
-        public List<string> Roles { get; set; }
     }
 }

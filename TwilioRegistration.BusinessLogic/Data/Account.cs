@@ -61,7 +61,7 @@ namespace TwilioRegistration.BusinessLogic.Data
 
         public virtual ICollection<Role> Roles { get; set; }
 
-        public AccountDT GetDT(bool includeRoles = false)
+        public AccountDT GetDT()
         {
             return new AccountDT()
             {
@@ -72,8 +72,7 @@ namespace TwilioRegistration.BusinessLogic.Data
                 Prefix = Prefix,
                 CreatedAt = CreatedAt,
                 IsActive = IsActive,
-                Server = Server.GetDT(),
-                Roles = includeRoles ? Roles.Select(r=>r.Name).ToList() : new List<string>()
+                Server = Server.GetDT()
             };
         }
     }

@@ -2,39 +2,22 @@
     app.config(function ($routeProvider, $locationProvider, $httpProvider) {
         $locationProvider.html5Mode(true);
 
-        getToken = ['$q', '$window', function ($q, $window) {
-            if ($window.sessionStorage.token) {
-                return $window.sessionStorage.token
-            } else {
-                return $q.reject({ authenticated: false })
-            }
-        }]
-
         $routeProvider.when('/control-panel', {
             templateUrl: '/html/control-panel/dashboard.html',
             controller: 'DashboardCtrl',
             controllerAs: 'ctrl',
-            resolve: {
-                token: getToken
-            },
             activeTab: 'dashboard'
         });
         $routeProvider.when('/control-panel/devices', {
             templateUrl: '/html/control-panel/devices.html',
             controller: 'DevicesCtrl',
             controllerAs: 'ctrl',
-            resolve: {
-                token: getToken
-            },
             activeTab: 'devices'
         });
         $routeProvider.when('/control-panel/calls', {
             templateUrl: '/html/control-panel/calls.html',
             controller: 'CallsCtrl',
             controllerAs: 'ctrl',
-            resolve: {
-                token: getToken
-            },
             activeTab: 'calls'
         });
 
@@ -54,13 +37,14 @@
     })
 
     app.run(function ($rootScope, $window, $http) {
-        $rootScope.$on("$routeChangeError", function (event, current, previous, eventObj) {
-            if (eventObj.authenticated === false) {
-                $window.location.href = '/'
-            }
-        });
+        if (!$window.sessionStorage.token) {
+            $window.location.href = '/'
+        }
 
         $http.defaults.headers.common.Authorization = 'Bearer ' + $window.sessionStorage.token
+        if ($window.sessionStorage.actingAs) {
+            $http.defaults.headers.common['Acting-As'] = $window.sessionStorage.actingAs
+        }
     });
 
 
