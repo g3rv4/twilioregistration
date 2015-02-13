@@ -40,8 +40,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AccountDT.cs" />
+    <Compile Include="DeviceDT.cs" />
+    <Compile Include="Enums\Results\AddDevice.cs" />
     <Compile Include="Enums\DeviceStatus.cs" />
-    <Compile Include="Enums\LogInStatus.cs" />
+    <Compile Include="Enums\LogInResult.cs" />
+    <Compile Include="Enums\Results\DeleteDevice.cs" />
     <Compile Include="LogInResultDT.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ServerDT.cs" />

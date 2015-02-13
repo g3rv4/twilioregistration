@@ -52,15 +52,43 @@ namespace TwilioRegistration.BusinessLogic.Data
 
         public override int SaveChanges()
         {
-            DateTime saveTime = DateTime.UtcNow;
-            foreach (var entry in this.ChangeTracker.Entries().Where(e => e.State == System.Data.Entity.EntityState.Added))
-            {
-                if (entry.Property("CreatedAt").CurrentValue == null)
-                    entry.Property("CreatedAt").CurrentValue = saveTime;
-                if (entry.Property("UpdatedAt").CurrentValue == null)
-                    entry.Property("UpdatedAt").CurrentValue = saveTime;
-            }
+            UpdateCreatedUpdatedAt();
             return base.SaveChanges();
+        }
+
+        public override Task<int> SaveChangesAsync(System.Threading.CancellationToken cancellationToken)
+        {
+            UpdateCreatedUpdatedAt();
+            return base.SaveChangesAsync(cancellationToken);
+        }
+
+        private void UpdateCreatedUpdatedAt()
+        {
+            DateTime saveTime = DateTime.UtcNow;
+            foreach (var entry in this.ChangeTracker.Entries().Where(e => e.State == EntityState.Added || e.State == EntityState.Modified))
+            {
+                if (entry.State == EntityState.Added)
+                {
+                    try
+                    {
+                        if ((DateTime)entry.Property("CreatedAt").CurrentValue == DateTime.MinValue)
+                            entry.Property("CreatedAt").CurrentValue = saveTime;
+                    }
+                    catch (InvalidOperationException)
+                    {
+                        // if the entity doesn't have a CreatedAt, don't do anything
+                    }
+                }
+                try
+                {
+                    if ((DateTime)entry.Property("UpdatedAt").CurrentValue == DateTime.MinValue)
+                        entry.Property("UpdatedAt").CurrentValue = saveTime;
+                }
+                catch (InvalidOperationException)
+                {
+                    // if the entity doesn't have an UpdatedAt, don't do anything
+                }
+            }
         }
     }
 }

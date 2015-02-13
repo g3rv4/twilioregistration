@@ -11,7 +11,7 @@ using TwilioRegistration.Frontend.Utils;
 
 namespace TwilioRegistration.Frontend.Controllers
 {
-    [ClaimsAuthorizeAttribute]
+    [ClaimsAuthorize]
     [RoutePrefix("api/accounts")]
     public class AccountsController : BaseApiController
     {

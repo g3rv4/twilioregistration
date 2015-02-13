@@ -58,6 +58,7 @@
     <Compile Include="Helpers\PasswordHasher.cs" />
     <Compile Include="Helpers\RedisConnection.cs" />
     <Compile Include="Managers\AccountsMgr.cs" />
+    <Compile Include="Managers\DevicesMgr.cs" />
     <Compile Include="Migrations\201412292018182_Initial.cs" />
     <Compile Include="Migrations\201412292018182_Initial.Designer.cs">
       <DependentUpon>201412292018182_Initial.cs</DependentUpon>

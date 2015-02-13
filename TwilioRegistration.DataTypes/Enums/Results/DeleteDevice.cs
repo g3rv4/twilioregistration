@@ -4,13 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TwilioRegistration.DataTypes.Enums
+namespace TwilioRegistration.DataTypes.Enums.Results
 {
-    public enum LogInStatus
+    public enum DeleteDevice
     {
         SUCCESS,
-        INVALID_USER_PWD,
-        INACTIVE,
-        TEMPORARILY_DISABLED
+        INVALID_ACCOUNT,
+        INVALID_DEVICE
     }
 }

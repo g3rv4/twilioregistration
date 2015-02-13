@@ -8,7 +8,7 @@ namespace TwilioRegistration.DataTypes
 {
     public class LogInResultDT
     {
-        public LogInStatus Status { get; set; }
+        public LogInResult Status { get; set; }
 
         public string Token { get; set; }
 

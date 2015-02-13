@@ -137,13 +137,16 @@
     <Content Include="Content\html\control-panel\dashboard.html" />
     <Content Include="Content\html\errors.html" />
     <Content Include="Content\js\common\modal-errors.js" />
+    <Content Include="Content\js\control-panel\controllers.js" />
     <Content Include="Content\js\control-panel\main.js" />
     <Content Include="Content\js\libs\angular-resource.min.js" />
     <Content Include="Content\js\libs\angular-route.min.js" />
+    <Content Include="Content\js\libs\angular-table.min.js" />
     <Content Include="Content\js\libs\angular.min.js" />
     <Content Include="Content\js\libs\ie10-viewport-bug-workaround.js" />
     <Content Include="Content\js\libs\ui-bootstrap-tpls-0.12.0.min.js" />
     <Content Include="Content\js\models\account-service.js" />
+    <Content Include="Content\js\models\device-service.js" />
     <Content Include="Content\js\sales\main.js" />
     <Content Include="Web.config" />
   </ItemGroup>
@@ -152,6 +155,7 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\AccountsController.cs" />
     <Compile Include="Controllers\BaseApiController.cs" />
+    <Compile Include="Controllers\DevicesController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
@@ -213,7 +217,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>2093</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://twilioregistration</IISUrl>
+          <IISUrl>https://twilioregistration.dev</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>

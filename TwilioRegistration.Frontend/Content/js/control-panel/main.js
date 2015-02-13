@@ -7,14 +7,12 @@
             controller: 'DashboardCtrl',
             controllerAs: 'ctrl',
             activeTab: 'dashboard'
-        });
-        $routeProvider.when('/control-panel/devices', {
+        }).when('/control-panel/devices/:action?', {
             templateUrl: '/html/control-panel/devices.html',
             controller: 'DevicesCtrl',
             controllerAs: 'ctrl',
             activeTab: 'devices'
-        });
-        $routeProvider.when('/control-panel/calls', {
+        }).when('/control-panel/calls', {
             templateUrl: '/html/control-panel/calls.html',
             controller: 'CallsCtrl',
             controllerAs: 'ctrl',
@@ -45,38 +43,5 @@
         if ($window.sessionStorage.actingAs) {
             $http.defaults.headers.common['Acting-As'] = $window.sessionStorage.actingAs
         }
-    });
-
-
-    app.controller('ControlPanelCtrl', function (accountService, $window, $route) {
-        var _this = this
-
-        _this.logOut = function () {
-            $window.sessionStorage.removeItem('token')
-            $window.location.href = '/'
-        }
-
-        _this.refresh = function ($route) {
-            var query = accountService.resource.current()
-            query.$promise.then(function (result) {
-                _this.account = result
-            });
-        }
-
-        _this.route = $route
-
-        _this.refresh()
-    });
-
-    app.controller('DashboardCtrl', function () {
-        var _this = this
-    });
-
-    app.controller('DevicesCtrl', function () {
-        var _this = this
-    });
-
-    app.controller('CallsCtrl', function () {
-        var _this = this
     });
 })();

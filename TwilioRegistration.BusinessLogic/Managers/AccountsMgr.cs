@@ -17,7 +17,7 @@ namespace TwilioRegistration.BusinessLogic.Managers
     {
         public static async Task<LogInResultDT> LogInAsync(string email, string password)
         {
-            var res = new LogInResultDT() { Status = LogInStatus.INVALID_USER_PWD };
+            var res = new LogInResultDT() { Status = LogInResult.INVALID_USER_PWD };
             using (var context = new Context())
             {
                 // doing the temporary lock of accounts on redis, so that we even lock non existent ones. This lets us give real users useful feedback, while an attacker would get the temporarily disabled message for every account (not being able to find out which ones exist and which ones don't)
@@ -28,7 +28,7 @@ namespace TwilioRegistration.BusinessLogic.Managers
 
                 if (failedLogins >= maxFailedLogins)
                 {
-                    res.Status = LogInStatus.TEMPORARILY_DISABLED;
+                    res.Status = LogInResult.TEMPORARILY_DISABLED;
                     return res;
                 }
                 
@@ -38,11 +38,11 @@ namespace TwilioRegistration.BusinessLogic.Managers
                     // verify if the account is active once we know that the user knows their pwd and that their account isn't temporarily disabled
                     if (!account.IsActive)
                     {
-                        res.Status = LogInStatus.INACTIVE;
+                        res.Status = LogInResult.INACTIVE;
                         return res;
                     }
 
-                    res.Status = LogInStatus.SUCCESS;
+                    res.Status = LogInResult.SUCCESS;
                     res.Token = System.Guid.NewGuid().ToString();
                     res.AccountId = account.Id;
 
@@ -70,17 +70,27 @@ namespace TwilioRegistration.BusinessLogic.Managers
             return null;
         }
 
-        public static async Task<AccountDT> GetAccountAsync(int accountId)
+        public static async Task<AccountDT> GetAccountAsync(int accountId, bool onlyActive = true)
         {
             using (var context = new Context())
             {
-                var account = await context.Accounts.Where(a => a.Id == accountId).FirstOrDefaultAsync();
+                var account = await GetAccountAsync(accountId, context, onlyActive);
                 if (account != null)
                 {
                     return account.GetDT();
                 }
             }
             return null;
+        }
+
+        internal static async Task<Account> GetAccountAsync(int accountId, Context context, bool onlyActive = true)
+        {
+            var query = context.Accounts.Where(a => a.Id == accountId);
+            if (onlyActive)
+            {
+                query = query.Where(a => a.IsActive);
+            }
+            return await query.FirstOrDefaultAsync();
         }
 
         public static async Task<List<string>> GetRolesAsync(int accountId)

@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TwilioRegistration.DataTypes;
 using TwilioRegistration.DataTypes.Enums;
 
 namespace TwilioRegistration.BusinessLogic.Data
@@ -30,5 +31,17 @@ namespace TwilioRegistration.BusinessLogic.Data
         public int AccountId { get; set; }
 
         public virtual Account Account { get; set; }
+
+        public DeviceDT GetDT()
+        {
+            return new DeviceDT()
+            {
+                Id = Id,
+                Username = Username,
+                Status = Status,
+                CreatedAt = CreatedAt,
+                UpdatedAt = UpdatedAt
+            };
+        }
     }
 }
