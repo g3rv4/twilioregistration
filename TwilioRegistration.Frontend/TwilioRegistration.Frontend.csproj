@@ -136,6 +136,7 @@
     <Content Include="Content\html\control-panel\devices.html" />
     <Content Include="Content\html\control-panel\dashboard.html" />
     <Content Include="Content\html\errors.html" />
+    <Content Include="Content\js\common\filters.js" />
     <Content Include="Content\js\common\modal-errors.js" />
     <Content Include="Content\js\control-panel\controllers.js" />
     <Content Include="Content\js\control-panel\main.js" />
@@ -148,6 +149,7 @@
     <Content Include="Content\js\models\account-service.js" />
     <Content Include="Content\js\models\device-service.js" />
     <Content Include="Content\js\sales\main.js" />
+    <Content Include="Libs\EntityFramework.SqlServer.dll" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
@@ -159,6 +161,7 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
+    <Compile Include="Utils\BusinessExceptionsFilter.cs" />
     <Compile Include="Utils\ClaimsAuthorizeAttribute.cs" />
     <Compile Include="Utils\TokenValidationAttribute.cs" />
     <Compile Include="Utils\TWRAuthorizationServerProvider.cs" />

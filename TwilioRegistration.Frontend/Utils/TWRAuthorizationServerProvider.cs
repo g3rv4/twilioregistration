@@ -19,18 +19,18 @@ namespace TwilioRegistration.Frontend.Utils
 
         public override async Task GrantResourceOwnerCredentials(OAuthGrantResourceOwnerCredentialsContext context)
         {
-            var loginResult = await AccountsMgr.LogInAsync(context.UserName, context.Password);
-            if (loginResult.Status == LogInResult.SUCCESS)
+            try
             {
+                var loginResult = await AccountsMgr.LogInAsync(context.UserName, context.Password);
                 var identity = new ClaimsIdentity(context.Options.AuthenticationType, "accountId", "role");
-                identity.AddClaim(new Claim("token", loginResult.Token));
-                identity.AddClaims((await AccountsMgr.GetRolesAsync(loginResult.AccountId.Value)).Select(r => new Claim("role", r)));
-                identity.AddClaims((await AccountsMgr.GetPermissionsAsync(loginResult.AccountId.Value)).Select(p => new Claim("permission", p)));
+                identity.AddClaim(new Claim("token", loginResult.Item1.ToString()));
+                identity.AddClaims((await AccountsMgr.GetRolesAsync(loginResult.Item2)).Select(r => new Claim("role", r)));
+                identity.AddClaims((await AccountsMgr.GetPermissionsAsync(loginResult.Item2)).Select(p => new Claim("permission", p)));
                 context.Validated(identity);
             }
-            else
+            catch (Exception ex)
             {
-                context.SetError(loginResult.Status.ToString());
+                context.SetError(ex.GetType().ToString());
             }
         }
     }

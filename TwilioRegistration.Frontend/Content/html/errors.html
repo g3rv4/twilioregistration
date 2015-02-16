@@ -4,7 +4,7 @@
 <div class="modal-body">
     <ul>
         <li ng-repeat="error in ctrl.errors">
-            {{error}}
+            {{error | errorMessage}}
         </li>
     </ul>
 </div>

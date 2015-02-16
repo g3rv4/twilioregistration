@@ -58,17 +58,7 @@
                 deviceService.resource.save(device, function (data) {
                     $location.url('/control-panel/devices')
                 }, function (response) {
-                    reason = response.data.message
-                    errors = []
-                    if (reason == 'INVALID_ACCOUNT') {
-                        errors.push('Invalid Account')
-                    } else if (reason == 'INVALID_USERNAME') {
-                        errors.push('The username can only contain letters and numbers')
-                    } else if (reason == 'INVALID_PASSWORD') {
-                        errors.push('The password should be at least 8 characters long')
-                    } else if (reason == 'USERNAME_TAKEN') {
-                        errors.push('The username you chose for this device is already used by another of your devices')
-                    }
+                    errors = [response.data.message]
                     _this.showErrors(errors)
                 })
             } else {

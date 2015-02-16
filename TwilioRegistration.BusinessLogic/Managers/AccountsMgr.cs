@@ -10,14 +10,14 @@ using TwilioRegistration.BusinessLogic.Helpers;
 using TwilioRegistration.DataTypes;
 using TwilioRegistration.DataTypes.Enums;
 using StackExchange.Redis;
+using TwilioRegistration.DataTypes.Exceptions;
 
 namespace TwilioRegistration.BusinessLogic.Managers
 {
     public static class AccountsMgr
     {
-        public static async Task<LogInResultDT> LogInAsync(string email, string password)
+        public static async Task<Tuple<Guid, int>> LogInAsync(string email, string password)
         {
-            var res = new LogInResultDT() { Status = LogInResult.INVALID_USER_PWD };
             using (var context = new Context())
             {
                 // doing the temporary lock of accounts on redis, so that we even lock non existent ones. This lets us give real users useful feedback, while an attacker would get the temporarily disabled message for every account (not being able to find out which ones exist and which ones don't)
@@ -28,8 +28,7 @@ namespace TwilioRegistration.BusinessLogic.Managers
 
                 if (failedLogins >= maxFailedLogins)
                 {
-                    res.Status = LogInResult.TEMPORARILY_DISABLED;
-                    return res;
+                    throw new AccountTemporarilyDisabledException();
                 }
                 
                 var account = await context.Accounts.Where(a => a.Email == email).FirstOrDefaultAsync();
@@ -38,16 +37,15 @@ namespace TwilioRegistration.BusinessLogic.Managers
                     // verify if the account is active once we know that the user knows their pwd and that their account isn't temporarily disabled
                     if (!account.IsActive)
                     {
-                        res.Status = LogInResult.INACTIVE;
-                        return res;
+                        throw new AccountInactiveException();
                     }
 
-                    res.Status = LogInResult.SUCCESS;
-                    res.Token = System.Guid.NewGuid().ToString();
-                    res.AccountId = account.Id;
+                    var token = Guid.NewGuid();
 
                     int tokenDeactivationSeconds = int.Parse(ConfigurationManager.AppSettings["Account.TokenExpirationSeconds"]);
-                    RedisConnection.Instance.Database.StringSet("token:" + res.Token, account.Id, TimeSpan.FromSeconds(tokenDeactivationSeconds), flags: CommandFlags.FireAndForget);
+                    RedisConnection.Instance.Database.StringSet("token:" + token.ToString(), account.Id, TimeSpan.FromSeconds(tokenDeactivationSeconds), flags: CommandFlags.FireAndForget);
+
+                    return new Tuple<Guid,int>(token, account.Id);
                 }
                 else
                 {
@@ -55,7 +53,7 @@ namespace TwilioRegistration.BusinessLogic.Managers
                     RedisConnection.Instance.Database.StringSet("failed-logins:" + email, failedLogins + 1, TimeSpan.FromSeconds(accountDeactivationSeconds), flags: CommandFlags.FireAndForget);
                 }
             }
-            return res;
+            throw new InvalidUsernameOrPasswordException();
         }
 
         public static async Task<int?> GetAccountIdAsync(string token)
@@ -74,13 +72,8 @@ namespace TwilioRegistration.BusinessLogic.Managers
         {
             using (var context = new Context())
             {
-                var account = await GetAccountAsync(accountId, context, onlyActive);
-                if (account != null)
-                {
-                    return account.GetDT();
-                }
+                return (await GetAccountAsync(accountId, context, onlyActive)).GetDT();
             }
-            return null;
         }
 
         internal static async Task<Account> GetAccountAsync(int accountId, Context context, bool onlyActive = true)
@@ -90,7 +83,12 @@ namespace TwilioRegistration.BusinessLogic.Managers
             {
                 query = query.Where(a => a.IsActive);
             }
-            return await query.FirstOrDefaultAsync();
+            var account = await query.FirstOrDefaultAsync();
+            if (account == null)
+            {
+                throw new InvalidAccountException();
+            }
+            return account;
         }
 
         public static async Task<List<string>> GetRolesAsync(int accountId)

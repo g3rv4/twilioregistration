@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using TwilioRegistration.BusinessLogic.Managers;
 using TwilioRegistration.DataTypes;
-using TwilioRegistration.DataTypes.Enums.Results;
 using TwilioRegistration.Frontend.Utils;
 
 namespace TwilioRegistration.Frontend.Controllers
@@ -22,22 +21,12 @@ namespace TwilioRegistration.Frontend.Controllers
 
         public async Task Post([FromBody]DeviceDT device)
         {
-            var result = await DevicesMgr.AddDeviceAsync(_AccountId, device.Username, device.Password);
-            if (result != AddDevice.SUCCESS)
-            {
-                var response = Request.CreateErrorResponse(HttpStatusCode.BadRequest, result.ToString());
-                throw new HttpResponseException(response);
-            }
+            await DevicesMgr.AddDeviceAsync(_AccountId, device.Username, device.Password);
         }
 
         public async Task Delete(int id)
         {
-            var result = await DevicesMgr.DeleteDeviceAsync(_AccountId, id);
-            if (result != DeleteDevice.SUCCESS)
-            {
-                var response = Request.CreateErrorResponse(HttpStatusCode.BadRequest, result.ToString());
-                throw new HttpResponseException(response);
-            }
+            await DevicesMgr.DeleteDeviceAsync(_AccountId, id);
         }
     }
 }

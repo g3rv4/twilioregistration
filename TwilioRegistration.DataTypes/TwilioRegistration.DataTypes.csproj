@@ -41,11 +41,16 @@
   <ItemGroup>
     <Compile Include="AccountDT.cs" />
     <Compile Include="DeviceDT.cs" />
-    <Compile Include="Enums\Results\AddDevice.cs" />
     <Compile Include="Enums\DeviceStatus.cs" />
-    <Compile Include="Enums\LogInResult.cs" />
-    <Compile Include="Enums\Results\DeleteDevice.cs" />
-    <Compile Include="LogInResultDT.cs" />
+    <Compile Include="Exceptions\AccountInactiveException.cs" />
+    <Compile Include="Exceptions\AccountTemporarilyDisabledException.cs" />
+    <Compile Include="Exceptions\BusinessException.cs" />
+    <Compile Include="Exceptions\InvalidAccountException.cs" />
+    <Compile Include="Exceptions\InvalidDeviceException.cs" />
+    <Compile Include="Exceptions\InvalidPasswordException.cs" />
+    <Compile Include="Exceptions\InvalidUsernameException.cs" />
+    <Compile Include="Exceptions\InvalidUsernameOrPasswordException.cs" />
+    <Compile Include="Exceptions\UsernameTakenException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ServerDT.cs" />
   </ItemGroup>

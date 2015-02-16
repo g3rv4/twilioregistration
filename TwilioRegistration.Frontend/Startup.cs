@@ -23,6 +23,7 @@ namespace TwilioRegistration.Frontend
             HttpConfiguration config = new HttpConfiguration();
             WebApiConfig.Register(config);
             app.UseWebApi(config);
+            config.Filters.Add(new BusinessExceptionsFilter());
 
             AreaRegistration.RegisterAllAreas();
             RouteConfig.RegisterRoutes(RouteTable.Routes);

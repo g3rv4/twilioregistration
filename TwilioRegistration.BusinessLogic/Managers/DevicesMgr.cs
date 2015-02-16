@@ -8,7 +8,7 @@ using TwilioRegistration.DataTypes;
 using System.Data.Entity;
 using System.Text.RegularExpressions;
 using TwilioRegistration.DataTypes.Enums;
-using TwilioRegistration.DataTypes.Enums.Results;
+using TwilioRegistration.DataTypes.Exceptions;
 
 namespace TwilioRegistration.BusinessLogic.Managers
 {
@@ -25,26 +25,22 @@ namespace TwilioRegistration.BusinessLogic.Managers
             }
         }
 
-        public static async Task<AddDevice> AddDeviceAsync(int accountId, string username, string password)
+        public static async Task AddDeviceAsync(int accountId, string username, string password)
         {
             using (var context = new Context())
             {
                 if (!Regex.IsMatch(username, "^[a-z0-9]+$", RegexOptions.IgnoreCase))
                 {
-                    return AddDevice.INVALID_USERNAME;
+                    throw new InvalidUsernameException();
                 }
                 if (password.Length < 8)
                 {
-                    return AddDevice.INVALID_PASSWORD;
+                    throw new InvalidPasswordException();
                 }
                 var account = await AccountsMgr.GetAccountAsync(accountId, context);
-                if (account == null)
-                {
-                    return AddDevice.INVALID_ACCOUNT;
-                }
                 if (account.Devices.Any(d => d.Username == username))
                 {
-                    return AddDevice.USERNAME_TAKEN;
+                    throw new UsernameTakenException();
                 }
 
                 var device = new Device();
@@ -54,28 +50,21 @@ namespace TwilioRegistration.BusinessLogic.Managers
                 device.Status = DeviceStatus.PENDING_CHANGES;
                 context.Devices.Add(device);
                 await context.SaveChangesAsync();
-
-                return AddDevice.SUCCESS;
             }
         }
 
-        public static async Task<DeleteDevice> DeleteDeviceAsync(int accountId, int deviceId)
+        public static async Task DeleteDeviceAsync(int accountId, int deviceId)
         {
             using (var context = new Context())
             {
                 var account = await AccountsMgr.GetAccountAsync(accountId, context);
-                if (account == null)
-                {
-                    return DeleteDevice.INVALID_ACCOUNT;
-                }
                 var device = account.Devices.Where(d => d.Id == deviceId && d.Status != DeviceStatus.DELETED).FirstOrDefault();
                 if (device == null)
                 {
-                    return DeleteDevice.INVALID_DEVICE;
+                    throw new InvalidDeviceException();
                 }
                 device.Status = DeviceStatus.DELETED;
                 await context.SaveChangesAsync();
-                return DeleteDevice.SUCCESS;
             }
         }
     }

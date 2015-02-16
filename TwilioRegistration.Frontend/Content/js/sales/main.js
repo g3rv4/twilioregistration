@@ -13,12 +13,6 @@
                         if (isFinite(reason)) {
                             errors.push('HTTP Error: ' + reason)
                         } else {
-                            switch (reason) {
-                                case 'INVALID_USER_PWD': reason = 'Invalid email or password'; break
-                                case 'INACTIVE': reason = 'Your account is inactive'; break
-                                case 'TEMPORARILY_DISABLED': reason = 'Your account has been temporarily disabled due to many unsuccessful login attempts. Try again later.'; break
-                                default: reason = 'Unknown code: ' + reason
-                            }
                             errors.push(reason)
                         }
                         _this.showErrors(errors)
