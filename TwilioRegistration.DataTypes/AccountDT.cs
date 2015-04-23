@@ -14,9 +14,7 @@ namespace TwilioRegistration.DataTypes
 
         public string LastName { get; set; }
 
-        public string Email { get; set; }
-
-        public string Prefix { get; set; }
+        public string Username { get; set; }
 
         public DateTime CreatedAt { get; set; }
 

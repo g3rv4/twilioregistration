@@ -16,7 +16,7 @@ namespace TwilioRegistration.BusinessLogic.Managers
 {
     public static class AccountsMgr
     {
-        public static async Task<Tuple<Guid, int>> LogInAsync(string email, string password)
+        public static async Task<Tuple<Guid, int>> LogInAsync(string username, string password)
         {
             using (var context = new Context())
             {
@@ -24,14 +24,14 @@ namespace TwilioRegistration.BusinessLogic.Managers
                 int maxFailedLogins = int.Parse(ConfigurationManager.AppSettings["Account.MaxFailedLogins"]);
 
                 int failedLogins = 0;
-                int.TryParse(await RedisConnection.Instance.Database.StringGetAsync("failed-logins:" + email), out failedLogins);
+                int.TryParse(await RedisConnection.Instance.Database.StringGetAsync("failed-logins:" + username), out failedLogins);
 
                 if (failedLogins >= maxFailedLogins)
                 {
                     throw new AccountTemporarilyDisabledException();
                 }
                 
-                var account = await context.Accounts.Where(a => a.Email == email).FirstOrDefaultAsync();
+                var account = await context.Accounts.Where(a => a.Username == username).FirstOrDefaultAsync();
                 if (account != null && account.PasswordMatches(password))
                 {
                     // verify if the account is active once we know that the user knows their pwd and that their account isn't temporarily disabled
@@ -50,7 +50,7 @@ namespace TwilioRegistration.BusinessLogic.Managers
                 else
                 {
                     int accountDeactivationSeconds = int.Parse(ConfigurationManager.AppSettings["Account.AccountDeactivationSeconds"]);
-                    RedisConnection.Instance.Database.StringSet("failed-logins:" + email, failedLogins + 1, TimeSpan.FromSeconds(accountDeactivationSeconds), flags: CommandFlags.FireAndForget);
+                    RedisConnection.Instance.Database.StringSet("failed-logins:" + username, failedLogins + 1, TimeSpan.FromSeconds(accountDeactivationSeconds), flags: CommandFlags.FireAndForget);
                 }
             }
             throw new InvalidUsernameOrPasswordException();
@@ -76,7 +76,7 @@ namespace TwilioRegistration.BusinessLogic.Managers
             }
         }
 
-        internal static async Task<Account> GetAccountAsync(int accountId, Context context, bool onlyActive = true)
+        internal static async Task<Account> GetAccountAsync(int accountId, Context context, bool onlyActive = true, bool onlyHuman = false)
         {
             var query = context.Accounts.Where(a => a.Id == accountId);
             if (onlyActive)
@@ -84,7 +84,7 @@ namespace TwilioRegistration.BusinessLogic.Managers
                 query = query.Where(a => a.IsActive);
             }
             var account = await query.FirstOrDefaultAsync();
-            if (account == null)
+            if (account == null || (onlyHuman && !(account is HumanAccount)))
             {
                 throw new InvalidAccountException();
             }

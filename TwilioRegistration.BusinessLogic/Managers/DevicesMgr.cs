@@ -37,7 +37,7 @@ namespace TwilioRegistration.BusinessLogic.Managers
                 {
                     throw new InvalidPasswordException();
                 }
-                var account = await AccountsMgr.GetAccountAsync(accountId, context);
+                var account = (HumanAccount)await AccountsMgr.GetAccountAsync(accountId, context, onlyHuman: true);
                 if (account.Devices.Any(d => d.Username == username))
                 {
                     throw new UsernameTakenException();
@@ -57,7 +57,7 @@ namespace TwilioRegistration.BusinessLogic.Managers
         {
             using (var context = new Context())
             {
-                var account = await AccountsMgr.GetAccountAsync(accountId, context);
+                var account = (HumanAccount)await AccountsMgr.GetAccountAsync(accountId, context, onlyHuman: true);
                 var device = account.Devices.Where(d => d.Id == deviceId && d.Status != DeviceStatus.DELETED).FirstOrDefault();
                 if (device == null)
                 {

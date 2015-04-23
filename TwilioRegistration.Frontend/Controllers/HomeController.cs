@@ -15,7 +15,8 @@ namespace TwilioRegistration.Frontend.Controllers
 
         public ActionResult ControlPanel()
         {
-            return View();
+            string html = System.IO.File.ReadAllText(HttpContext.Server.MapPath("~/Content/control-panel.html"));
+            return Content(html);
         }
 	}
 }

@@ -14,18 +14,10 @@ namespace TwilioRegistration.BusinessLogic.Data
     {
         public int Id { get; set; }
 
+        [Index(IsUnique = true)]
         [Required]
         [MaxLength(255)]
-        public string FirstName { get; set; }
-
-        [Required]
-        [MaxLength(255)]
-        public string LastName { get; set; }
-
-        [Index(IsUnique=true)]
-        [Required]
-        [MaxLength(255)]
-        public string Email { get; set; }
+        public virtual string Username { get; set; }
 
         [NotMapped]
         public string Password
@@ -39,41 +31,37 @@ namespace TwilioRegistration.BusinessLogic.Data
         [Required]
         public string HashedPassword { get; set; }
 
-        [Index(IsUnique = true)]
-        [Required]
-        [MaxLength(25)]
-        public string Prefix { get; set; }
-
         public DateTime CreatedAt { get; set; }
 
         public bool IsActive { get; set; }
 
-        public int ServerId { get; set; }
+        public int? ServerId { get; set; }
 
         public virtual Server Server { get; set; }
 
-        public virtual ICollection<Device> Devices { get; set; }
+        public virtual ICollection<Role> Roles { get; set; }
 
         public bool PasswordMatches(string pwd)
         {
             return PasswordHasher.ValidatePassword(pwd, HashedPassword);
         }
 
-        public virtual ICollection<Role> Roles { get; set; }
-
         public AccountDT GetDT()
         {
-            return new AccountDT()
+            var account = GetConcreteDT();
+            account.Id = Id;
+            account.CreatedAt = CreatedAt;
+            account.IsActive = IsActive;
+            if (Server != null)
             {
-                Id = Id,
-                FirstName = FirstName,
-                LastName = LastName,
-                Email = Email,
-                Prefix = Prefix,
-                CreatedAt = CreatedAt,
-                IsActive = IsActive,
-                Server = Server.GetDT()
-            };
+                account.Server = Server.GetDT();
+            }
+            return account;
+        }
+
+        public virtual AccountDT GetConcreteDT()
+        {
+            return new AccountDT();
         }
     }
 }

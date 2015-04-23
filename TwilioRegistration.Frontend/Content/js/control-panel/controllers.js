@@ -77,6 +77,21 @@
             }
         }
 
+        _this.changePassword = function (item) {
+            var modalInstance = $modal.open({
+                templateUrl: 'change-passwords.html',
+                controller: 'ChangePasswordModalCtrl',
+                controllerAs: 'ctrl',
+                resolve: {
+                    item: function () {
+                        return item;
+                    }
+                }
+            });
+
+
+        }
+
         _this.showErrors = function (errors) {
             var modalInstance = $modal.open({
                 templateUrl: '/html/errors.html',

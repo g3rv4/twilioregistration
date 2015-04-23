@@ -51,6 +51,7 @@
     <Compile Include="Exceptions\InvalidUsernameException.cs" />
     <Compile Include="Exceptions\InvalidUsernameOrPasswordException.cs" />
     <Compile Include="Exceptions\UsernameTakenException.cs" />
+    <Compile Include="HumanAccountDT.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ServerDT.cs" />
   </ItemGroup>

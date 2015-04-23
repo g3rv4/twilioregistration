@@ -26,7 +26,10 @@
                         <td at-implicit at-attribute="username" at-sortable at-initial-sorting="asc"></td>
                         <td at-implicit at-attribute="status" at-sortable></td>
                         <td at-implicit at-attribute="createdAt" at-sortable></td>
-                        <td><a href="#" class="btn btn-xs btn-danger" role="button" ng-click="ctrl.deleteDevice(item)">Delete</a></td>
+                        <td>
+                            <a href="#" class="btn btn-xs btn-primary" role="button" ng-click="ctrl.changePassword(item)">Change Password</a>
+                            <a href="#" class="btn btn-xs btn-danger" role="button" ng-click="ctrl.deleteDevice(item)">Delete</a>
+                        </td>
                     </tr>
                 </tbody>
             </table>
@@ -63,6 +66,7 @@
             <div class="form-group">
                 <label>Password</label>
                 <input class="form-control" name="password" ng-model="ctrl.newDevice.password" type="password" required ng-minlength="8" />
+                <p class="help-block">Your password is going to be stored as the md5secret of the device in Asterisk (because I haven't found a way to do it better <a href="http://www.voip-info.org/wiki/view/Asterisk+sip+md5secret" target="_blank">than this</a>). Considering that md5 "<a href="http://www.kb.cert.org/vuls/id/836068" target="_blank">should be considered cryptographically broken and unsuitable for further use</a> don't use any of your important passwords.</p>
             </div>
             <button type="submit" class="btn btn-primary">Add Device</button> <a href="/control-panel/devices" class="btn btn-danger">Cancel</a>
         </form>
